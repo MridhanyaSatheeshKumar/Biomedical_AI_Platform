@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+
+# Environment variables
+.env
+
+# Logs
+*.log
+
+# Databases
+*.db
+
+# Virtual environments
+venv/
+# Large datasets
+synthea_sample_data_fhir_r4_sep2019.zip
+data/*.zip
+
