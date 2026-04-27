@@ -1,0 +1,5 @@
+loinc_code,concept_name,snomed_code,disease_name
+2339-0,glucose,44054006,Diabetes Mellitus
+4548-4,hba1c,44054006,Diabetes Mellitus
+2571-8,triglycerides,55822004,Hyperlipidemia
+39156-5,bmi,414916001,Obesity
