@@ -11,17 +11,17 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 clinical_path = os.path.join(
     BASE_DIR,
-    "FHIR_Project/data/patient_features_semantic.csv"
+    "data/patient_features_semantic.csv"
 )
 
 behavior_path = os.path.join(
     BASE_DIR,
-    "Food_Craving_Pattern_Analysis/data/food_logs.csv"
+    "application/health_insights_app/data/food_logs.csv"
 )
 
 health_path = os.path.join(
     BASE_DIR,
-    "Personalized_Nutrition_AI/data/user_health_data.csv"
+    "application/health_insights_app/data/user_health_data.csv"
 )
 
 # -----------------------------------

@@ -12,8 +12,7 @@ uri = "bolt://localhost:7687"
 user = "neo4j"
 password = "password"
 
-driver = GraphDatabase.driver(uri, auth=(user, password))
-
+driver = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "Mineo4jthu1@"))
 
 # -----------------------------------
 # Load integrated dataset
@@ -21,10 +20,7 @@ driver = GraphDatabase.driver(uri, auth=(user, password))
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
-data_path = os.path.join(
-    BASE_DIR,
-    "Integration/patient_integrated_profile.csv"
-)
+data_path = os.path.join(BASE_DIR, "data/patient_integrated_profile.csv")
 
 df = pd.read_csv(data_path)
 

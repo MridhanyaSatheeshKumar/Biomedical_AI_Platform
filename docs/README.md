@@ -30,3 +30,6 @@ WITH CSV HEADER;
 
 Purpose:
 Dataset used for predictive modeling of glycemic risk.
+
+Raw FHIR dataset (Synthea) is excluded due to size.
+Download from: https://synthetichealth.github.io/synthea/
