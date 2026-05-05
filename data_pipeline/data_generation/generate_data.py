@@ -2,21 +2,22 @@ import pandas as pd
 import random
 import os
 
+# -------------------------
+# Setup paths (robust)
+# -------------------------
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 RAW_PATH = os.path.join(BASE_DIR, "data", "raw")
 
 os.makedirs(RAW_PATH, exist_ok=True)
 
 # -------------------------
-# Load clinical IDs
+# Generate synthetic patient IDs
 # -------------------------
 
-clinical_path = os.path.join(BASE_DIR, "data", "processed", "patient_features_semantic.csv")
+import uuid
 
-clinical = pd.read_csv(clinical_path)
-
-users = clinical["patient_id"].tolist()
-
+users = [str(uuid.uuid4()) for _ in range(62)]
 # -------------------------
 # Generate Food Logs
 # -------------------------
@@ -33,14 +34,12 @@ for _ in range(300):
     user = random.choice(users)
 
     food_data.append({
-
         "patient_id": user,
         "time_of_day": random.choice(times),
         "mood": random.choice(moods),
         "trigger": random.choice(triggers),
         "food_type": random.choice(foods),
         "calories": random.randint(100, 600)
-
     })
 
 food_df = pd.DataFrame(food_data)
@@ -52,7 +51,6 @@ food_df.to_csv(
 
 print("Food logs generated")
 
-
 # -------------------------
 # Generate Health Data
 # -------------------------
@@ -62,7 +60,6 @@ health_data = []
 for user in users:
 
     health_data.append({
-
         "patient_id": user,
         "glucose": random.randint(80, 180),
         "hba1c": round(random.uniform(4.5, 8.5), 1),
@@ -71,7 +68,6 @@ for user in users:
         "sleep_hours": random.randint(4, 9),
         "craving_level": random.randint(1, 10),
         "risk_flag": random.randint(0, 1)
-
     })
 
 health_df = pd.DataFrame(health_data)

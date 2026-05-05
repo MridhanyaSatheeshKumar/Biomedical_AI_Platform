@@ -1,37 +1,21 @@
 import pandas as pd
 import os
 
-print("\nBuilding unified patient profiles...\n")
+print("\n--- BUILDING UNIFIED PATIENT PROFILES ---\n")
 
 # -----------------------------------
-# Setup base directory (robust paths)
+# Setup base directory
 # -----------------------------------
 
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-
-clinical_path = os.path.join(
-    BASE_DIR,
-    "data/patient_features_semantic.csv"
-)
-
-behavior_path = os.path.join(
-    BASE_DIR,
-    "application/health_insights_app/data/food_logs.csv"
-)
-
-health_path = os.path.join(
-    BASE_DIR,
-    "application/health_insights_app/data/user_health_data.csv"
-)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 # -----------------------------------
-# Check required files exist
+# Paths
 # -----------------------------------
 
-if not os.path.exists(clinical_path):
-    raise Exception(
-        "Missing patient_features_semantic.csv. Run FHIR pipeline first."
-    )
+clinical_path = os.path.join(BASE_DIR, "data/curated/clinical_clean.csv")
+behavior_path = os.path.join(BASE_DIR, "data/curated/behavior_clean.csv")
+health_path   = os.path.join(BASE_DIR, "data/curated/health_clean.csv")
 
 # -----------------------------------
 # Load data
@@ -39,80 +23,87 @@ if not os.path.exists(clinical_path):
 
 clinical = pd.read_csv(clinical_path)
 behavior = pd.read_csv(behavior_path)
-health = pd.read_csv(health_path)
+health   = pd.read_csv(health_path)
 
 # -----------------------------------
-# Normalize ID types (string)
+# Behavioral aggregation
 # -----------------------------------
 
-clinical["patient_id"] = clinical["patient_id"].astype(str)
-behavior["user_id"] = behavior["user_id"].astype(str)
-health["user_id"] = health["user_id"].astype(str)
+print("Aggregating behavioral data...")
 
-# -----------------------------------
-# Entity Mapping (FHIR → user_id)
-# -----------------------------------
-
-unique_patients = clinical["patient_id"].unique()
-available_users = health["user_id"].unique()
-
-mapping = pd.DataFrame({
-    "patient_id": unique_patients[:len(available_users)],
-    "user_id": available_users
-})
-
-# Merge mapping into clinical data
-clinical = clinical.merge(mapping, on="patient_id", how="left")
-
-# Drop patients without mapping
-clinical = clinical.dropna(subset=["user_id"])
-
-# -----------------------------------
-# Behavioral feature engineering
-# -----------------------------------
-
-behavior_summary = behavior.groupby("user_id").agg({
-
+behavior_summary = behavior.groupby("patient_id").agg({
     "calories": "mean",
-
     "food_type": "count"
-
 }).reset_index()
 
-behavior_summary.rename(
-    columns={
-        "food_type": "craving_frequency",
-        "calories": "avg_craving_calories"
-    },
-    inplace=True
-)
+behavior_summary.rename(columns={
+    "food_type": "craving_frequency",
+    "calories": "avg_craving_calories"
+}, inplace=True)
 
 # -----------------------------------
 # Merge datasets
 # -----------------------------------
 
-merged = clinical.merge(
-    health,
-    on="user_id",
-    how="left"
-)
+print("Merging datasets...")
 
-merged = merged.merge(
-    behavior_summary,
-    on="user_id",
-    how="left"
-)
+merged = clinical.merge(health, on="patient_id", how="left")
+merged = merged.merge(behavior_summary, on="patient_id", how="left")
+
+# -----------------------------------
+# Resolve feature conflicts
+# -----------------------------------
+
+print("Resolving feature conflicts...")
+
+def unify(primary, secondary):
+    return primary.combine_first(secondary)
+
+if "glucose_x" in merged.columns:
+    merged["glucose"] = unify(merged["glucose_x"], merged["glucose_y"])
+    merged["hba1c"]   = unify(merged["hba1c_x"], merged["hba1c_y"])
+    merged["bmi"]     = unify(merged["bmi_x"], merged["bmi_y"])
+
+    merged.drop(columns=[
+        "glucose_x", "glucose_y",
+        "hba1c_x", "hba1c_y",
+        "bmi_x", "bmi_y"
+    ], inplace=True)
+
+# -----------------------------------
+# Handle missing values (REALISTIC)
+# -----------------------------------
+
+print("Handling missing values...")
+
+# Fill clinical values (important for modeling / reasoning)
+clinical_cols = ["glucose", "hba1c", "triglycerides", "creatinine", "bmi", "weight"]
+
+for col in clinical_cols:
+    if col in merged.columns:
+        merged[col] = merged[col].fillna(merged[col].median())
+
+# Semantic label → "None" means no detected condition
+merged["snomed_condition"] = merged["snomed_condition"].astype(str)
+merged["snomed_condition"] = merged["snomed_condition"].replace("nan", "None")
+
+# -----------------------------------
+# Post-clean
+# -----------------------------------
+
+merged["avg_craving_calories"] = merged["avg_craving_calories"].fillna(0)
+merged["craving_frequency"]    = merged["craving_frequency"].fillna(0)
+
+merged = merged.drop_duplicates(subset=["patient_id"])
 
 # -----------------------------------
 # Save output
 # -----------------------------------
 
-output_path = os.path.join(
-    BASE_DIR,
-    "Integration/patient_integrated_profile.csv"
-)
+output_path = os.path.join(BASE_DIR, "data/semantic_ready/patient_dataset.csv")
 
+os.makedirs(os.path.dirname(output_path), exist_ok=True)
 merged.to_csv(output_path, index=False)
 
-print("Patient integrated profiles created successfully")
+print("\n--- INTEGRATION COMPLETE ---")
 print(f"Saved to: {output_path}")
