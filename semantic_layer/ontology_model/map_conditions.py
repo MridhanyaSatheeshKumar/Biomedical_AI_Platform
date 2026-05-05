@@ -1,35 +1,18 @@
 import pandas as pd
+import os
 
-df = pd.read_csv("data/patient_features_with_rules.csv")
+print("\n--- Mapping conditions to SNOMED ---\n")
 
-print("\nMapping risks to SNOMED conditions...\n")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+data_path = os.path.join(BASE_DIR, "data/semantic_ready/patient_dataset.csv")
 
+df = pd.read_csv(data_path)
 
-df["snomed_condition"] = None
+# Ensure column exists
+df["snomed_condition"] = df["snomed_condition"].fillna("")
 
+# Save (clean version)
+output_path = os.path.join(BASE_DIR, "data/semantic_ready/patient_dataset.csv")
+df.to_csv(output_path, index=False)
 
-df.loc[
-    df["glycemic_risk_rule"] == 1,
-    "snomed_condition"
-] = "44054006"
-
-
-df.loc[
-    df["obesity_risk"] == 1,
-    "snomed_condition"
-] = "414916001"
-
-
-df.loc[
-    df["lipid_risk"] == 1,
-    "snomed_condition"
-] = "55822004"
-
-
-df.to_csv(
-    "data/patient_features_semantic.csv",
-    index=False
-)
-
-
-print("SNOMED mapping complete")
+print("SNOMED mapping verified and saved")

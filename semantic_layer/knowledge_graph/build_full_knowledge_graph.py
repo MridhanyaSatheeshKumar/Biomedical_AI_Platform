@@ -9,115 +9,89 @@ print("\nBuilding FULL knowledge graph...\n")
 # -----------------------------------
 
 uri = "bolt://localhost:7687"
-user = "neo4j"
-password = "password"
-
-driver = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "Mineo4jthu1@"))
+driver = GraphDatabase.driver(uri, auth=("neo4j", "Mineo4jthu1@"))
 
 # -----------------------------------
-# Load integrated dataset
+# Load FINAL dataset (important fix)
 # -----------------------------------
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
-data_path = os.path.join(BASE_DIR, "data/patient_integrated_profile.csv")
+data_path = os.path.join(BASE_DIR, "data/semantic_ready/patient_dataset.csv")
 
 df = pd.read_csv(data_path)
 
-# Normalize column names
-df.columns = df.columns.str.lower()
-
-# Fix merged column names
-if "bmi_x" in df.columns:
-    df.rename(columns={"bmi_x": "bmi"}, inplace=True)
-
-if "glucose_x" in df.columns:
-    df.rename(columns={"glucose_x": "glucose"}, inplace=True)
-
 # -----------------------------------
-# Graph creation logic
+# Graph creation
 # -----------------------------------
 
 def create_graph(tx, row):
 
-    # Patient node
+    # Patient
     tx.run(
-        """
-        MERGE (p:Patient {id: $patient_id})
-        """,
-        patient_id=row["patient_id"]
+        "MERGE (p:Patient {id: $id})",
+        id=row["patient_id"]
     )
 
-    # -----------------------------
     # BMI
-    # -----------------------------
     if pd.notna(row["bmi"]):
         tx.run(
             """
-            MATCH (p:Patient {id: $patient_id})
-            MERGE (b:BMI {value: $bmi})
+            MATCH (p:Patient {id: $id})
+            MERGE (b:BMI {value: $val})
             MERGE (p)-[:HAS_BMI]->(b)
             """,
-            patient_id=row["patient_id"],
-            bmi=float(row["bmi"])
+            id=row["patient_id"],
+            val=float(row["bmi"])
         )
 
-    # -----------------------------
     # Glucose
-    # -----------------------------
     if pd.notna(row["glucose"]):
         tx.run(
             """
-            MATCH (p:Patient {id: $patient_id})
-            MERGE (g:Glucose {value: $glucose})
+            MATCH (p:Patient {id: $id})
+            MERGE (g:Glucose {value: $val})
             MERGE (p)-[:HAS_GLUCOSE]->(g)
             """,
-            patient_id=row["patient_id"],
-            glucose=float(row["glucose"])
+            id=row["patient_id"],
+            val=float(row["glucose"])
         )
 
-    # -----------------------------
-    # Food craving
-    # -----------------------------
-    if pd.notna(row["craving_frequency"]):
-        tx.run(
-            """
-            MATCH (p:Patient {id: $patient_id})
-            MERGE (c:Craving {frequency: $freq})
-            MERGE (p)-[:HAS_CRAVING]->(c)
-            """,
-            patient_id=row["patient_id"],
-            freq=int(row["craving_frequency"])
-        )
-
-    # -----------------------------
-    # Sleep
-    # -----------------------------
+    # Lifestyle
     if pd.notna(row["sleep_hours"]):
         tx.run(
             """
-            MATCH (p:Patient {id: $patient_id})
-            MERGE (s:Sleep {hours: $sleep})
+            MATCH (p:Patient {id: $id})
+            MERGE (s:Sleep {hours: $val})
             MERGE (p)-[:HAS_SLEEP]->(s)
             """,
-            patient_id=row["patient_id"],
-            sleep=float(row["sleep_hours"])
+            id=row["patient_id"],
+            val=float(row["sleep_hours"])
         )
 
-    # -----------------------------
-    # SNOMED condition
-    # -----------------------------
+    # Behavior
+    if pd.notna(row["craving_frequency"]):
+        tx.run(
+            """
+            MATCH (p:Patient {id: $id})
+            MERGE (c:Craving {freq: $val})
+            MERGE (p)-[:HAS_CRAVING]->(c)
+            """,
+            id=row["patient_id"],
+            val=int(row["craving_frequency"])
+        )
+
+    # Condition (semantic part)
     if pd.notna(row["snomed_condition"]):
         tx.run(
             """
-            MATCH (p:Patient {id: $patient_id})
+            MATCH (p:Patient {id: $id})
             MERGE (d:Disease {code: $code})
             MERGE (p)-[:AT_RISK_FOR]->(d)
             """,
-            patient_id=row["patient_id"],
+            id=row["patient_id"],
             code=row["snomed_condition"]
         )
-
 
 # -----------------------------------
 # Run graph build
