@@ -1,65 +1,44 @@
-# FHIR Semantic Clinical Data Engineering Pipeline for Glycemic Risk Modeling
+# Biomedical Semantic Clinical Data Pipeline
 
-This project implements a semantic clinical data engineering pipeline that integrates healthcare data from FHIR sources, harmonizes clinical observations using LOINC terminology, and generates machine-learning ready clinical feature tables for glycemic risk modeling.
+This project implements a semantic clinical data engineering pipeline that processes healthcare data from FHIR sources, standardizes clinical observations using LOINC, and constructs a unified patient dataset enriched with semantic representations and knowledge graph modeling.
 
-The system demonstrates healthcare interoperability, semantic data normalization, biomedical ontology usage, and clinical feature engineering workflows commonly used in translational biomedical informatics research.
+The system demonstrates how raw clinical data can be transformed into structured knowledge using ontology-driven design, RDF representation, and graph-based reasoning.
 
-# Architecture Diagram
+---
 
+# Key Features
 
-## Key Features
+- FHIR-based clinical data ingestion
+- LOINC-based biomarker standardization
+- Patient-level feature engineering from clinical observations
+- Integration of clinical, behavioral, and lifestyle data
+- Semantic enrichment using SNOMED condition mapping
+- RDF generation and SPARQL querying
+- Knowledge graph construction using Neo4j
+- Rule-based clinical reasoning
 
-• FHIR clinical data ingestion (local and SMART FHIR sources)
+---
 
-• Ontology-driven biomarker extraction using LOINC codes
+# Data Sources
 
-• Semantic clinical data harmonization into ML feature tables
+The pipeline integrates multiple healthcare data sources:
 
-• PostgreSQL clinical data warehouse integration
+- Synthetic FHIR data (Synthea)
+- Behavioral data (food logs)
+- Lifestyle data (health metrics)
 
-• Glycemic risk modeling using clinical biomarkers
+---
 
-• Modular biomedical data pipeline design
+# Technologies Used
 
-## Data Sources
+- Python
+- FHIR (Fast Healthcare Interoperability Resources)
+- LOINC (lab test standardization)
+- SNOMED CT (clinical conditions)
+- RDF / rdflib
+- SPARQL
+- Neo4j (knowledge graph)
 
-The pipeline supports multiple clinical data ingestion pathways:
+---
 
-1 Synthetic FHIR data (Synthea bundles)
-
-2 SMART FHIR clinical server integration
-
-3 Structured clinical CSV ingestion (extensible)
-
-This demonstrates integration of heterogeneous biomedical data sources.
-
-## Technologies Used
-
-Python
-FHIR (Fast Healthcare Interoperability Resources)
-LOINC biomedical terminology
-PostgreSQL
-SQL
-scikit-learn
-REST APIs
-Healthcare data modeling
-Neo4j
-RDF
-rdflib
-SPARQL
-
-## Pipeline Workflow
-
-FHIR ingestion
-→ Semantic normalization
-→ Terminology filtering
-→ Clinical feature harmonization
-→ Machine learning modeling
-→ Risk prediction output
-
-### SPARQL Query Example
-
-Query: Patients with BMI > 30
-
-Result:
-Patient_4d58... → BMI: 30.04
+# Pipeline Workflow
