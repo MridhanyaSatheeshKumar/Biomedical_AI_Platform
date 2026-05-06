@@ -13,24 +13,7 @@ The architecture is designed to be modular, extensible, and aligned with real-wo
 ## End-to-End Flow
 
 
-FHIR + Behavioral + Lifestyle Data
-↓
-Biomarker Extraction (LOINC normalization)
-↓
-Patient Feature Engineering
-↓
-Data Cleaning & Validation
-↓
-Data Integration (Unified Patient Dataset)
-↓
-Semantic Transformation (RDF)
-↓
-Ontology Mapping
-↓
-Knowledge Graph (Neo4j)
-↓
-Clinical Reasoning
-
+FHIR + Behavioral + Lifestyle Data → Biomarker Extraction (LOINC normalization) → Patient Feature Engineering → Data Cleaning & Validation → Data Integration (Unified Patient Dataset) → Semantic Transformation (RDF) → Ontology Mapping → Knowledge Graph (Neo4j) → Clinical Reasoning
 
 ---
 
