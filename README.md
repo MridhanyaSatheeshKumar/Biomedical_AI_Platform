@@ -1,5 +1,8 @@
 # Biomedical Semantic Clinical Data Pipeline
 
+<img width="708" height="525" alt="image" src="https://github.com/user-attachments/assets/b05cce96-620c-48a0-a9d9-b76689aa9349" />
+
+
 This project implements a semantic clinical data engineering pipeline that processes healthcare data from FHIR sources, standardizes clinical observations using LOINC, and constructs a unified patient dataset enriched with semantic representations and knowledge graph modeling.
 
 The system demonstrates how raw clinical data can be transformed into structured knowledge using ontology-driven design, RDF representation, and graph-based reasoning.
