@@ -193,8 +193,3 @@ This design enables:
 - Explainable clinical reasoning  
 - Integration of heterogeneous datasets  
 - Transition from data pipelines to knowledge systems  
-
----
-
-## Key Insight
-data → semantics → knowledge → reasoning

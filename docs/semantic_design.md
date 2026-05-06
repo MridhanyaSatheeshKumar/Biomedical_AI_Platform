@@ -203,5 +203,3 @@ This system demonstrates:
 - integration of heterogeneous data sources  
 - transformation into knowledge graphs  
 - explainable clinical reasoning  
-
----

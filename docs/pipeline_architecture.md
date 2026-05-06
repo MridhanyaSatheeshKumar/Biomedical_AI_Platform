@@ -162,9 +162,3 @@ data/semantic_ready/patient_dataset.csv
 - Semantic enrichment over raw data processing
 - Realistic handling of incomplete healthcare data
 - Extensibility to real-world systems
-
----
-
-## Key Insight
-
-data → semantics → knowledge → reasoning

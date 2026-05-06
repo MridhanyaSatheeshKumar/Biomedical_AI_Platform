@@ -23,7 +23,7 @@ The system integrates heterogeneous healthcare data sources — including clinic
 
 ---
 
-##ystem Architecture
+## System Architecture
 
 
 FHIR + CSV Data
@@ -112,11 +112,14 @@ This system demonstrates how real-world healthcare data can be:
 
 ---
 
-##ow to Run
+## How to Run
 
 ```bash
 python run_pipeline.py
-Outputs
+```
+---
+
+## Outputs
 data/semantic_ready/patient_dataset.csv → integrated dataset
 data/patient_features.rdf → RDF triples
 Neo4j graph → patient relationships and inferred risks
