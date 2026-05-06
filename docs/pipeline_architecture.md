@@ -48,7 +48,7 @@ These represent heterogeneous healthcare data sources commonly found in real sys
 
 ---
 
-### 2. Ingestion Layer *(Optional)*
+### 2. Ingestion Layer *(Further Expansion)*
 
 **Location:**
 - `data_pipeline/ingestion/`
